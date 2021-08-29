@@ -5,7 +5,8 @@
 (define-section @dot
   "Convenience tools for dot file creation."
   (with-new-dot-file macro)
-  (link) (label) (*gv-stream* variable))
+  (link) (label) (*gv-stream* variable)
+  (link-to-many))
 
 ;;; Graphviz
 (defmacro with-new-dot-file ((file &key (name "D") (type :digraph)
@@ -32,6 +33,9 @@
 (defun link (from to &optional (type 'link))
   "Print a graphviz link"
   (format *gv-stream* "~&~8T\"~a\" -> \"~a\" [type=\"~A\"]" from to type))
+
+(defun link-to-many (from to &optional (type 'link))
+  (format *gv-stream* "~&~8T\"~s -> {~@<~{~s~^,~_~}}  ~_[type=\"~a\"]~:>" from to type))
 
 (defun label (id name attrs)
   "Print a graphviz label.
