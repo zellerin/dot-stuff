@@ -35,7 +35,7 @@
   (format *gv-stream* "~&~8T\"~a\" -> \"~a\" [type=\"~A\"]" from to type))
 
 (defun link-to-many (from to &optional (type 'link))
-  (format *gv-stream* "~&~8T\"~s -> {~@<~{~s~^,~_~}}  ~_[type=\"~a\"]~:>" from to type))
+  (format *gv-stream* "~&~8T~s -> {~@<~{~s~^,~_~}}  ~_[type=\"~a\"]~:>" from to type))
 
 (defun label (id name attrs)
   "Print a graphviz label.
