@@ -43,3 +43,8 @@
 ATTRs should be a list of name-value lists."
   (format *gv-stream* "~&~4T\"~a\"~8T[label=\"~a\"~{, ~(~A~)=~S~}]~%"
 	  id name attrs))
+
+(defun draw-package-deps (file package-list known)
+  (with-new-dot-file (file :name "packages")
+    (dolist (pair (cz.zellerin.doc:package-deps package-list nil known))
+      (link (package-name (car pair)) (package-name (cdr pair))))))
