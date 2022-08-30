@@ -3,7 +3,7 @@
 (in-package #:dot-stuff)
 
 (define-section @dot
-  "Convenience tools for dot file creation."
+  "Convenience tools for Graphviz dot file creation."
   (with-new-dot-file macro)
   (link) (label) (*gv-stream* variable)
   (link-to-many))
