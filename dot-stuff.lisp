@@ -2,11 +2,11 @@
 
 (in-package #:dot-stuff)
 
-(define-section @dot
+(mgl-pax:defsection @dot ()
   "Convenience tools for Graphviz dot file creation."
   (with-new-dot-file macro)
-  (link) (label) (*gv-stream* variable)
-  (link-to-many))
+  (link function) (label function) (*gv-stream* variable)
+  (link-to-many function))
 
 ;;; Graphviz
 (defmacro with-new-dot-file ((file &key (name "D") (type :digraph)

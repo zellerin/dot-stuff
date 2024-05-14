@@ -1,6 +1,5 @@
 ;;;; package.lisp
 
-(cz.zellerin.doc:defpackage #:dot-stuff
+(mgl-pax:define-package #:dot-stuff
   (:use #:cl)
-  (:nicknames #:gv)
-  (:sections @dot))
+  (:nicknames #:gv))
