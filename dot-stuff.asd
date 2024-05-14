@@ -6,6 +6,6 @@
   :license  "Specify license here"
   :version "0.0.1"
   :serial t
-  :depends-on ()
+  :depends-on ("mgl-pax")
   :components ((:file "package")
                (:file "dot-stuff")))

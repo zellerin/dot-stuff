@@ -44,7 +44,47 @@ ATTRs should be a list of name-value lists."
   (format *gv-stream* "~&~4T\"~a\"~8T[label=\"~a\"~{, ~(~A~)=~S~}]~%"
 	  id name attrs))
 
-(defun draw-package-deps (file package-list known)
+(defvar *package-traverse-fn* #'package-use-list)
+
+(defun package-deps (expand-list noexpand expand-fn)
+  (labels ((expand-step (expand-list deps noexpand)
+             (if expand-list
+                 (let* ((new-deps (reduce 'append
+                                          (mapcar expand-fn expand-list)))
+                        (new-pkgs (remove-duplicates (mapcar 'cdr new-deps))))
+                   (expand-step (set-difference  new-pkgs (append expand-list noexpand))
+                                 (append deps new-deps)
+                                 (append noexpand expand-list)))
+                 deps)))
+    (expand-step expand-list nil noexpand)))
+
+(defvar *default-known* '(cl cffi mgl-pax))
+
+(defun draw-some-deps (file root-node-names sink-names to-name-fn from-name-fn expand-fn)
   (with-new-dot-file (file :name "packages")
-    (dolist (pair (cz.zellerin.doc:package-deps package-list nil known))
-      (link (package-name (car pair)) (package-name (cdr pair))))))
+    (dolist (sink sink-names)
+      (setf sink (funcall to-name-fn (funcall from-name-fn sink)))
+      (label sink sink '("class" "sink")))
+    (dolist (source root-node-names)
+      (setf source (funcall to-name-fn (funcall from-name-fn source)))
+      (label source source '("class" "source")))
+    (dolist (pair (package-deps (mapcar from-name-fn root-node-names)
+                                (mapcar from-name-fn sink-names)
+                                expand-fn))
+      (link (funcall to-name-fn (car pair))
+            (funcall to-name-fn (cdr pair))))))
+
+(defun draw-package-deps (file package-list known)
+  (draw-some-deps file package-list known #'package-name #'find-package
+                                                  (lambda (user)
+                                  (mapcar (lambda (used) (cons user used))
+                                          (package-use-list user)))))
+
+(defun draw-system-deps (file package-list known)
+  (draw-some-deps file package-list known
+                  'asdf/component:component-name
+                  'asdf:find-system
+                  (lambda (user)
+                    (mapcar (lambda (used)
+                                            (cons user (asdf:find-system used)))
+                            (remove-if-not 'stringp (asdf/system:system-depends-on user))))))
