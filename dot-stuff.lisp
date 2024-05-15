@@ -46,7 +46,7 @@ ATTRs should be a list of name-values (plist style)."
   (format *gv-stream* "~&~4T\"~a\"~8T[label=\"~a\"~{, ~(~A~)=~S~}]~%"
 	  id name attrs))
 
-(defsection @cl-applications (:title "Example applications")
+(defsection @cl-applications (:title "Example applications inside CL")
   (draw-some-deps function)
   (draw-package-deps function)
   (draw-system-deps function))
@@ -99,8 +99,10 @@ The COMMON-LISP package is not shown as a dependency for simple view.
 Example:
 
 ```
-(gv:draw-package-deps \"/tmp/hunchentoot.gv\" '(hunchentoot) ())
+(gv:draw-package-deps \"/tmp/hunchentoot.gv\" '(drakma hunchentoot) ())
 ```
+
+![](img/h-packages.png)
 "
   (draw-some-deps file package-list known #'package-name #'find-package
                   (lambda (user)
@@ -114,8 +116,10 @@ Example:
 Example: draw dependencies of Hunchentoot asdf package, do not expand cffi and cl+ssl.
 
 ```
-(gv:draw-system-deps \"/tmp/hunchentoot.gv\" '(hunchentoot) '(cffi cl+ssl))
+(gv:draw-system-deps \"/tmp/hunchentoot.gv\" '(hunchentoot) '(cl+ssl))
 ```
+
+![](img/hunchentoot.png)
 "
   (draw-some-deps file systems-list sinks
                   'asdf/component:component-name

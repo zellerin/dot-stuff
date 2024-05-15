@@ -83,9 +83,10 @@ Convenience tools for Graphviz dot file creation.
     Example:
     
     ```
-    (gv:draw-package-deps "/tmp/hunchentoot.gv" '(hunchentoot) ())
+    (gv:draw-package-deps "/tmp/hunchentoot.gv" '(drakma hunchentoot) ())
     ```
-
+    
+    ![](img/h-packages.png)
 
 <a id="x-28DOT-STUFF-3ADRAW-SYSTEM-DEPS-20FUNCTION-29"></a>
 
@@ -96,9 +97,10 @@ Convenience tools for Graphviz dot file creation.
     Example: draw dependencies of Hunchentoot asdf package, do not expand cffi and cl+ssl.
     
     ```
-    (gv:draw-system-deps "/tmp/hunchentoot.gv" '(hunchentoot) '(cffi cl+ssl))
+    (gv:draw-system-deps "/tmp/hunchentoot.gv" '(hunchentoot) '(cl+ssl))
     ```
-
+    
+    ![](img/hunchentoot.png)
 
   [3493]: #x-28DOT-STUFF-3A-40CL-APPLICATIONS-20MGL-PAX-3ASECTION-29 "Example applications"
   [6547]: http://www.lispworks.com/documentation/HyperSpec/Body/f_open.htm "OPEN (MGL-PAX:CLHS FUNCTION)"
