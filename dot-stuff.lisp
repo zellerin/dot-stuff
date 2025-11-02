@@ -165,7 +165,7 @@ Example: draw dependencies of Hunchentoot asdf package, do not expand cffi and c
                             (remove-if-not 'stringp (asdf/system:system-depends-on user))))))
 
 
-(defun draw-classes-up (file classes sinks)
+(defun draw-classes-down (file classes &optional (sinks '(standard-object)))
   "Draw dependencies of an class to graphviz FILE.
 
 ```
@@ -181,8 +181,7 @@ Example: draw dependencies of Hunchentoot asdf package, do not expand cffi and c
                     (mapcar (lambda (used)
                               (cons user used))
                             (closer-mop:class-direct-superclasses user)))))
-
-(defun draw-classes-down (file classes sinks)
+(defun draw-classes-up (file classes &optional sinks)
   "Draw dependencies of an class to graphviz FILE.
 
 ```
@@ -228,7 +227,10 @@ Example: draw dependencies of Hunchentoot asdf package, do not expand cffi and c
                   'class-name
                   'find-class
                   (lambda (user)
-                    (mapcar (lambda (used)
-                              (cons user used))
-                            (append (closer-mop:class-direct-subclasses user)
-                                    (closer-mop:class-direct-superclasses user))))))
+                    (append
+                     (mapcar (lambda (used)
+                               (cons user used))
+                             (closer-mop:class-direct-subclasses user))
+                     (mapcar (lambda (used)
+                               (cons used user))
+                             (closer-mop:class-direct-superclasses user))))))
