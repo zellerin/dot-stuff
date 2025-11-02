@@ -89,8 +89,10 @@ ATTRs should be a list of name-values (plist style)."
              (if expand-list
                  (let* ((new-deps (reduce 'append
                                           (mapcar expand-fn expand-list)))
-                        (new-pkgs (remove-duplicates (mapcar 'cdr new-deps))))
-                   (expand-step (set-difference  new-pkgs (append expand-list noexpand))
+                        (new-pkgs (remove-duplicates (concatenate 'list
+                                                                  (mapcar 'cdr new-deps)
+                                                                  (mapcar 'car new-deps)))))
+                   (expand-step (set-difference new-pkgs (append expand-list noexpand))
                                 (append deps new-deps)
                                 (append noexpand expand-list)))
                  deps)))
