@@ -17,6 +17,9 @@ only"
   (dynamic-graphs-display-graph-buffer (list (replace-regexp-in-string ".*:+" "" (upcase class)))
                                        '(remove-cycles boxize "N[class==\"sink\"]{style=\"filled\",fillcolor=\"lightblue\"}"
                                                        "N[class==\"source\"]{style=\"filled\",fillcolor=\"lightgreen\"}"
-                                                       "E[tail.class==\"sink\"]{style=\"dotted\",constraint=\"false\"}"
-                                                       "BEG_G{rankdir=\"LR\"}"))
+                                                       "N[]{URL=name, id=name}"
+                                                       "E[tail.name==\"STANDARD-OBJECT\"]{style=\"invis\",constraint=\"false\"}"
+                                                       "N[name==\"STANDARD-OBJECT\"]{style=\"invis\"}"
+                                                       "BEG_G{rankdir=\"LR\"}"
+                                                       node-refs))
   (dynamic-graphs-set-engine "dot"))
