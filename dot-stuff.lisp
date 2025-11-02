@@ -3,11 +3,44 @@
 (in-package #:dot-stuff)
 
 ;;; Graphviz
-(defmacro with-new-dot-file ((file &key (name "D") (type :digraph)
-					    (if-exists :supersede))
+
+(defun write-somewhere (output build-fn &key if-exists)
+  "Call WRITE-FN to write to an output. Output can be a stream, nil (denoting string output) or file name (string or pathname).
+
+This should be maybe somewhere in Alexandria or something?
+
+```cl-transcribe
+  (write-somewhere nil 'terpri)
+```
+
+```cl-transcribe
+  (write-somewhere *standard-output* 'terpri)
+```
+
+```cl-transcribe
+  (write-somewhere file 'terpri)
+```
+
+"
+  (etypecase output
+    ((or string pathname)
+     (with-open-file (out output :direction :output
+                                 :if-exists if-exists
+                                 :external-format :utf-8)
+       (funcall build-fn out)))
+    (null
+     (with-output-to-string (out)
+       (funcall build-fn out)))
+    ((satisfies streamp)        ; is there no base class for streams?
+     (funcall build-fn output))
+))
+
+
+(defmacro with-new-dot-file ((output &key (name "D") (type :digraph)
+				     (if-exists :supersede))
 			     &body body)
-  "Open FILE for writing, put Graphviz boilerplate there and run BODY with
-  *GV-STREAM* bound as a write stream to the file.
+  "Print Graphviz boilerplate and output of BODY with
+  *GV-STREAM* bound as a write stream to the OUTPUT (stream, file or return value).
 
   TYPE controls what goes in the boilerplate - the boilerplate is
 
@@ -19,12 +52,12 @@
 
 IF-EXISTS is as in OPEN."
   (declare ((member :digraph :graph) type))
-  `(with-open-file (*gv-stream* ,file :direction :output
-				    :if-exists ,if-exists
-				    :external-format :utf-8)
-     (format *gv-stream* "~(~a~) ~S {" ,type ,name)
-     ,@body
-     (format *gv-stream* "~%}")))
+  `(write-somewhere ,output
+                    (lambda (*gv-stream*)
+                      (format *gv-stream* "~(~a~) ~S {" ,type ,name)
+                      ,@body
+                      (format *gv-stream* "~%}"))
+                    :if-exists ,if-exists))
 
 (defvar *gv-stream* *standard-output*
   "Write stream bound in WITH-NEW-DOT-FILE. It allows user to write additional content to the graphviz file.")
