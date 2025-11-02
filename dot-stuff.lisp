@@ -161,3 +161,72 @@ Example: draw dependencies of Hunchentoot asdf package, do not expand cffi and c
                     (mapcar (lambda (used)
                               (cons user (asdf:find-system used)))
                             (remove-if-not 'stringp (asdf/system:system-depends-on user))))))
+
+
+(defun draw-classes-up (file classes sinks)
+  "Draw dependencies of an class to graphviz FILE.
+
+```
+(gv:draw-system-deps \"/tmp/hunchentoot.gv\" '(hunchentoot) '(cl+ssl))
+```
+
+![](img/hunchentoot.png)
+"
+  (draw-some-deps file classes sinks
+                  'class-name
+                  'find-class
+                  (lambda (user)
+                    (mapcar (lambda (used)
+                              (cons user used))
+                            (closer-mop:class-direct-superclasses user)))))
+
+(defun draw-classes-down (file classes sinks)
+  "Draw dependencies of an class to graphviz FILE.
+
+```
+(gv:draw-system-deps \"/tmp/hunchentoot.gv\" '(hunchentoot) '(cl+ssl))
+```
+
+![](img/hunchentoot.png)
+"
+  (draw-some-deps file classes sinks
+                  'class-name
+                  'find-class
+                  (lambda (user)
+                    (mapcar (lambda (used)
+                              (cons user used))
+                            (closer-mop:class-direct-subclasses user)))))
+
+(defun draw-fns-up (file functions &optional sinks)
+  "Draw users of a FUNCTION to graphviz FILE.
+
+```
+```
+
+![](img/hunchentoot.png)
+"
+  (draw-some-deps file FUNCTIONS sinks
+                  'identity
+                  'identity
+                  (lambda (used)
+                    (mapcar (lambda (user)
+                              (cons used (car user)))
+                            (sb-introspect:who-calls used)))))
+
+(defun draw-classes (file classes &optional (sinks '(standard-object)))
+  "Draw dependencies of an class to graphviz FILE.
+
+```
+(gv:draw-system-deps \"/tmp/hunchentoot.gv\" '(hunchentoot) '(cl+ssl))
+```
+
+![](img/hunchentoot.png)
+"
+  (draw-some-deps file classes sinks
+                  'class-name
+                  'find-class
+                  (lambda (user)
+                    (mapcar (lambda (used)
+                              (cons user used))
+                            (append (closer-mop:class-direct-subclasses user)
+                                    (closer-mop:class-direct-superclasses user))))))
