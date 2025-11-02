@@ -82,7 +82,11 @@ ATTRs should be a list of name-values (plist style)."
 (defsection @cl-applications (:title "Example applications inside CL")
   (draw-some-deps function)
   (draw-package-deps function)
-  (draw-system-deps function))
+  (draw-system-deps function)
+  (draw-classes-down function)
+  (draw-classes-up function)
+  (draw-classes function)
+  (draw-fns-up function))
 
 (defun package-deps (expand-list noexpand expand-fn)
   (labels ((expand-step (expand-list deps noexpand)
@@ -126,7 +130,10 @@ See examples DRAW-SYSTEM-DEPS and DRAW-PACKAGE-DEPS."
       (link (funcall to-name-fn (car pair))
             (funcall to-name-fn (cdr pair))))))
 
-(defun draw-package-deps (file package-list known)
+(defvar *sink-packages* '("CFFI" "MGL-PAX" "DREF")
+  "Default sink packages for drawing package dependencies.")
+
+(defun draw-package-deps (file package-list &optional (known *sink-packages*))
   "Draw dependencies of CL packages from PACKAGE-LIST into graphviz FILE.
 
 The COMMON-LISP package is not shown as a dependency for simple view.
@@ -145,7 +152,11 @@ Example:
                             (remove (find-package 'cl)
                                     (package-use-list user))))))
 
-(defun draw-system-deps (file systems-list sinks)
+(defvar *system-sinks*
+  '("let-over-lambda" "cl+ssl" "mgl-pax" "chipz" "trivial-utf-8" "cffi"
+    "bordeaux-threads" "gzip-stream"))
+
+(defun draw-system-deps (file systems-list &optional (sinks *system-sinks*))
   "Draw dependencies of an ASDF systems in SYSTEMS-LIST to a graphviz FILE.
 
 Example: draw dependencies of Hunchentoot asdf package, do not expand cffi and cl+ssl.
